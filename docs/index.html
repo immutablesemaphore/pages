@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Engineering Team Name Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 60px 40px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+
+        .team-names-display {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .team-name {
+            font-size: 2em;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 12px;
+            word-break: break-word;
+            cursor: pointer;
+            transition: transform 0.2s ease, color 0.2s ease;
+        }
+
+        .team-name:last-child {
+            margin-bottom: 0;
+        }
+
+        .team-name:hover {
+            transform: translateY(-1px);
+            color: #4f63d8;
+        }
+
+        .team-name.active {
+            color: #ffffff;
+            background: linear-gradient(135deg, #4e68e8 0%, #6b4fd0 100%);
+            border-radius: 12px;
+            padding: 8px 12px;
+            box-shadow: 0 12px 24px rgba(71, 89, 195, 0.45);
+            transform: scale(1.02);
+        }
+
+        .name-explanation {
+            margin-top: 16px;
+            background: #f3f7ff;
+            border: 1px solid #d8e3ff;
+            border-radius: 10px;
+            padding: 14px;
+            text-align: left;
+            color: #2f3f66;
+            font-size: 0.95em;
+            line-height: 1.45;
+            min-height: 54px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 14px 32px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-generate {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 14px 40px;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .btn-generate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-generate:active {
+            transform: translateY(0);
+        }
+
+        .btn-copy {
+            background: #e0e0e0;
+            color: #333;
+            padding: 14px 24px;
+        }
+
+        .btn-copy:hover {
+            background: #d0d0d0;
+            transform: translateY(-2px);
+        }
+
+        .copy-feedback {
+            display: none;
+            margin-top: 12px;
+            padding: 10px;
+            background: #d4edda;
+            color: #155724;
+            border-radius: 6px;
+            font-size: 0.95em;
+            animation: slideIn 0.3s ease;
+        }
+
+        .copy-feedback.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .settings {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid #eee;
+        }
+
+        .dataset-status {
+            margin-top: 16px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            background: #eef5ff;
+            color: #204a8e;
+            font-size: 0.9em;
+            text-align: left;
+            line-height: 1.4;
+        }
+
+        .dataset-status.error {
+            background: #fdecec;
+            color: #8a1f1f;
+        }
+
+        .setting-group {
+            margin-bottom: 15px;
+        }
+
+        .weight-control {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 12px;
+            text-align: left;
+        }
+
+        .weight-control label {
+            margin-right: 0;
+        }
+
+        .label-with-info {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .info-wrap {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .info-dot {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 1px solid #9bb0e8;
+            background: #eef3ff;
+            color: #3256b8;
+            font-size: 12px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: help;
+            user-select: none;
+        }
+
+        .info-tip {
+            position: absolute;
+            left: 22px;
+            top: -6px;
+            width: 240px;
+            background: #1f2a44;
+            color: #fff;
+            padding: 8px 10px;
+            border-radius: 8px;
+            font-size: 0.8em;
+            line-height: 1.35;
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(4px);
+            transition: opacity 0.16s ease, transform 0.16s ease;
+            z-index: 20;
+        }
+
+        .info-wrap:hover .info-tip,
+        .info-wrap:focus-within .info-tip {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .weight-control input[type="range"] {
+            width: 100%;
+        }
+
+        .weight-value {
+            font-weight: 700;
+            color: #4a4a4a;
+            min-width: 48px;
+            text-align: right;
+        }
+
+        label {
+            display: inline-block;
+            margin-right: 10px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        select {
+            padding: 8px 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1em;
+            background: #fff;
+            color: #333;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        input[type="number"] {
+            padding: 8px 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1em;
+            width: 80px;
+            text-align: center;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .footer {
+            margin-top: 30px;
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 40px 20px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .team-name {
+                font-size: 1.5em;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn-generate,
+            .btn-copy {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Team Name Generator</h1>
+        <p class="subtitle">Engineering teams deserve awesome names</p>
+
+        <div class="team-names-display" id="namesDisplay">
+            <div class="team-name">Click Generate</div>
+        </div>
+        <div class="name-explanation" id="nameExplanation">Click a generated name to see what it means.</div>
+
+        <div class="button-group">
+            <button class="btn-generate" onclick="generateTeamNames()">Generate Names</button>
+            <button class="btn-copy" onclick="copyToClipboard()">📋 Copy</button>
+        </div>
+
+        <div class="copy-feedback" id="copyFeedback">Copied to clipboard!</div>
+
+        <div class="settings">
+            <div class="setting-group">
+                <label for="nameCount">Number of names:</label>
+                <input type="number" id="nameCount" min="1" max="10" value="3">
+            </div>
+            <div class="setting-group">
+                <label for="mythicMode">Mythic mode:</label>
+                <select id="mythicMode">
+                    <option value="off">Standard</option>
+                    <option value="blend" selected>Blend Mythic</option>
+                    <option value="only">Mythic Only</option>
+                </select>
+            </div>
+            <div class="setting-group">
+                <label for="wordCount">Words after Team:</label>
+                <input type="number" id="wordCount" min="1" max="6" value="2">
+            </div>
+            <div class="weight-control">
+                <label for="adjectiveWeight">
+                    <span class="label-with-info">
+                        Adjective weight
+                        <span class="info-wrap" tabindex="0">
+                            <span class="info-dot">i</span>
+                            <span class="info-tip">Higher values make adjectives appear more often in each team name.</span>
+                        </span>
+                    </span>
+                </label>
+                <input type="range" id="adjectiveWeight" min="0" max="100" value="70">
+                <span class="weight-value" id="adjectiveWeightValue">70%</span>
+            </div>
+            <div class="weight-control">
+                <label for="mythicWeight">
+                    <span class="label-with-info">
+                        Mythic noun weight (Blend)
+                        <span class="info-wrap" tabindex="0">
+                            <span class="info-dot">i</span>
+                            <span class="info-tip">In Blend mode, higher values make mythic nouns much more likely than standard nouns.</span>
+                        </span>
+                    </span>
+                </label>
+                <input type="range" id="mythicWeight" min="0" max="100" value="80">
+                <span class="weight-value" id="mythicWeightValue">80%</span>
+            </div>
+            <div class="weight-control">
+                <label for="suffixWeight">
+                    <span class="label-with-info">
+                        Suffix weight
+                        <span class="info-wrap" tabindex="0">
+                            <span class="info-dot">i</span>
+                            <span class="info-tip">Higher values append a suffix like Squad, Alliance, or Guild more often.</span>
+                        </span>
+                    </span>
+                </label>
+                <input type="range" id="suffixWeight" min="0" max="100" value="50">
+                <span class="weight-value" id="suffixWeightValue">50%</span>
+            </div>
+            <div class="dataset-status" id="datasetStatus">Dataset: not loaded</div>
+        </div>
+
+        <div class="footer">
+            <p>Made with ❤️ for engineering teams</p>
+        </div>
+    </div>
+
+    <script src="./words-pos.js"></script>
+    <script>
+        let adjectives = [];
+        let nouns = [];
+        let suffixes = [];
+        let mythicNames = [];
+        let datasetLoaded = false;
+        let generatedNames = [];
+        let termDefinitions = Object.create(null);
+
+        const generateButton = document.querySelector('.btn-generate');
+        const copyButton = document.querySelector('.btn-copy');
+
+        function setButtonsEnabled(enabled) {
+            generateButton.disabled = !enabled;
+            copyButton.disabled = !enabled;
+            generateButton.style.opacity = enabled ? '1' : '0.5';
+            copyButton.style.opacity = enabled ? '1' : '0.5';
+            generateButton.style.cursor = enabled ? 'pointer' : 'not-allowed';
+            copyButton.style.cursor = enabled ? 'pointer' : 'not-allowed';
+        }
+
+        function setDatasetStatus(message, isError = false) {
+            const status = document.getElementById('datasetStatus');
+            status.textContent = message;
+            status.classList.toggle('error', isError);
+        }
+
+        function getRandomElement(array) {
+            return array[Math.floor(Math.random() * array.length)];
+        }
+
+        function toTitleCase(word) {
+            return word.charAt(0).toUpperCase() + word.slice(1);
+        }
+
+        function showCopyFeedback(message) {
+            const feedback = document.getElementById('copyFeedback');
+            feedback.textContent = message;
+            feedback.classList.add('show');
+            setTimeout(() => feedback.classList.remove('show'), 2500);
+        }
+
+        function lookupDefinition(term, details) {
+            const key = term.toLowerCase();
+            if (termDefinitions[key]) {
+                return termDefinitions[key];
+            }
+
+            return 'No definition is currently available for this term.';
+        }
+
+        function clampInt(value, min, max, fallback) {
+            const parsed = parseInt(value, 10);
+            if (Number.isNaN(parsed)) {
+                return fallback;
+            }
+            return Math.max(min, Math.min(max, parsed));
+        }
+
+        function getWeightFraction(id) {
+            const input = document.getElementById(id);
+            const value = clampInt(input.value, 0, 100, 50);
+            return value / 100;
+        }
+
+        function getMythicBlendWeight() {
+            return getWeightFraction('mythicWeight');
+        }
+
+        function updateWeightLabels() {
+            const pairs = [
+                ['adjectiveWeight', 'adjectiveWeightValue'],
+                ['mythicWeight', 'mythicWeightValue'],
+                ['suffixWeight', 'suffixWeightValue']
+            ];
+
+            pairs.forEach(([inputId, labelId]) => {
+                const input = document.getElementById(inputId);
+                const label = document.getElementById(labelId);
+                if (input && label) {
+                    label.textContent = `${input.value}%`;
+                }
+            });
+        }
+
+        function generateTeamName() {
+            const mode = document.getElementById('mythicMode').value;
+            const wordsAfterTeam = clampInt(document.getElementById('wordCount').value, 1, 6, 2);
+            const targetWordCount = wordsAfterTeam + 1;
+            const adjectiveChance = getWeightFraction('adjectiveWeight');
+            const suffixChance = getWeightFraction('suffixWeight');
+
+            let nounPool = nouns;
+            let nounSource = 'standard';
+
+            if (mode === 'only' && mythicNames.length > 0) {
+                nounPool = mythicNames;
+                nounSource = 'mythic';
+            }
+
+            if (mode === 'blend' && mythicNames.length > 0 && Math.random() < getMythicBlendWeight()) {
+                nounPool = mythicNames;
+                nounSource = 'mythic';
+            }
+
+            const adjective = getRandomElement(adjectives);
+            const noun = getRandomElement(nounPool);
+            const suffixWord = suffixes.length > 0 && Math.random() < suffixChance
+                ? getRandomElement(suffixes)
+                : '';
+
+            const words = ['Team'];
+            let adjectiveIncluded = false;
+
+            if (Math.random() < adjectiveChance) {
+                words.push(toTitleCase(adjective));
+                adjectiveIncluded = true;
+            }
+
+            words.push(toTitleCase(noun));
+
+            if (suffixWord) {
+                words.push(toTitleCase(suffixWord));
+            }
+
+            while (words.length > targetWordCount && words.length > 2) {
+                const removableSuffixIndex = suffixWord ? words.lastIndexOf(toTitleCase(suffixWord)) : -1;
+                const removableAdjectiveIndex = adjectiveIncluded ? words.indexOf(toTitleCase(adjective)) : -1;
+
+                if (removableSuffixIndex > 1) {
+                    words.splice(removableSuffixIndex, 1);
+                } else if (removableAdjectiveIndex > 0) {
+                    words.splice(removableAdjectiveIndex, 1);
+                    adjectiveIncluded = false;
+                } else {
+                    break;
+                }
+            }
+
+            const extraWords = [];
+            while (words.length < targetWordCount) {
+                const filler = toTitleCase(getRandomElement(adjectives));
+                words.splice(Math.max(1, words.length - 1), 0, filler);
+                extraWords.push(filler.toLowerCase());
+            }
+
+            const name = words.join(' ');
+
+            return {
+                name,
+                adjective: adjectiveIncluded ? adjective : '',
+                noun,
+                suffix: words.includes(toTitleCase(suffixWord)) ? suffixWord : '',
+                nounSource,
+                wordCount: wordsAfterTeam,
+                extraWords
+            };
+        }
+
+        function explainName(index) {
+            const details = generatedNames[index];
+            if (!details) {
+                return;
+            }
+
+            const explanation = document.getElementById('nameExplanation');
+            const terms = details.name
+                .split(/\s+/)
+                .filter(Boolean)
+                .map(term => term.replace(/[^a-zA-Z]/g, ''))
+                .filter(term => term && term.toLowerCase() !== 'team');
+
+            const uniqueTerms = [...new Set(terms.map(t => t.toLowerCase()))];
+            const lines = uniqueTerms.map(term => {
+                const rendered = toTitleCase(term);
+                const def = lookupDefinition(term, details);
+                return `${rendered}: ${def}`;
+            });
+
+            explanation.textContent = lines.length > 0
+                ? lines.join(' ')
+                : 'No explainable terms found for this name.';
+
+            document.querySelectorAll('.team-name').forEach((el, idx) => {
+                el.classList.toggle('active', idx === index);
+            });
+        }
+
+        function copySingleNameToClipboard(name) {
+            navigator.clipboard.writeText(name).then(() => {
+                showCopyFeedback(`Copied "${name}"`);
+            }).catch(err => {
+                console.error('Failed to copy single name:', err);
+            });
+        }
+
+        function buildSuffixesFromNouns(nounList) {
+            const preferred = [
+                'team', 'squad', 'crew', 'league', 'alliance', 'collective',
+                'network', 'matrix', 'group', 'guild', 'unit', 'force'
+            ];
+
+            const available = nounList.filter(word => preferred.includes(word));
+            return available.map(toTitleCase);
+        }
+
+        function loadDataset() {
+            const display = document.getElementById('namesDisplay');
+            setButtonsEnabled(false);
+            display.innerHTML = '<div class="team-name">Loading local dictionary...</div>';
+
+            try {
+                const payload = window.WORDS_POS_DATA;
+                if (!payload) {
+                    throw new Error('Missing dataset script: data/processed/words-pos.js');
+                }
+
+                const source = payload.json_doc || payload;
+
+                const nextAdjectives = Array.isArray(source.adjectives) ? source.adjectives : [];
+                const nextNouns = Array.isArray(source.nouns) ? source.nouns : [];
+                const nextSuffixes = buildSuffixesFromNouns(nextNouns);
+                const nextMythic = Array.isArray(source.mythic) ? source.mythic : [];
+                const defs = Array.isArray(source.definitions) ? source.definitions : [];
+
+                if (nextAdjectives.length === 0 || nextNouns.length === 0) {
+                    throw new Error('Dataset is missing required word arrays');
+                }
+
+                adjectives = nextAdjectives;
+                nouns = nextNouns;
+                suffixes = nextSuffixes;
+                mythicNames = nextMythic;
+                termDefinitions = Object.create(null);
+                defs.forEach(entry => {
+                    if (entry && entry.term && entry.definition) {
+                        termDefinitions[String(entry.term).toLowerCase()] = String(entry.definition);
+                    }
+                });
+                datasetLoaded = true;
+
+                const sourceName = source.meta && source.meta.source ? source.meta.source : 'unknown';
+                setDatasetStatus(
+                    `Dataset loaded from ${sourceName}. adjectives=${adjectives.length}, nouns=${nouns.length}, mythic=${mythicNames.length}, suffixes=${suffixes.length}, definitions=${Object.keys(termDefinitions).length}`
+                );
+                setButtonsEnabled(true);
+            } catch (error) {
+                console.error('Failed to load required local dataset.', error);
+                datasetLoaded = false;
+                setDatasetStatus(`Dataset load failed: ${error.message}.`, true);
+                display.innerHTML = '<div class="team-name">Dataset load failed</div>';
+                return;
+            }
+
+            generateTeamNames();
+
+            ['adjectiveWeight', 'mythicWeight', 'suffixWeight'].forEach(id => {
+                const el = document.getElementById(id);
+                el.addEventListener('input', updateWeightLabels);
+            });
+            updateWeightLabels();
+        }
+
+        function generateTeamNames() {
+            if (!datasetLoaded) {
+                return;
+            }
+
+            const count = parseInt(document.getElementById('nameCount').value) || 3;
+            const display = document.getElementById('namesDisplay');
+            generatedNames = [];
+
+            for (let i = 0; i < count; i++) {
+                generatedNames.push(generateTeamName());
+            }
+
+            display.innerHTML = generatedNames
+                .map((item, idx) => `<div class="team-name" data-name-index="${idx}">${item.name}</div>`)
+                .join('');
+
+            display.querySelectorAll('.team-name').forEach(el => {
+                el.addEventListener('click', () => {
+                    const idx = Number(el.getAttribute('data-name-index'));
+                    explainName(idx);
+                    if (generatedNames[idx] && generatedNames[idx].name) {
+                        copySingleNameToClipboard(generatedNames[idx].name);
+                    }
+                });
+            });
+
+            const explanation = document.getElementById('nameExplanation');
+            explanation.textContent = 'Click a generated name to see what it means.';
+            
+            // Hide copy feedback when generating new names
+            const feedback = document.getElementById('copyFeedback');
+            feedback.classList.remove('show');
+        }
+
+        function copyToClipboard() {
+            if (!datasetLoaded) {
+                return;
+            }
+
+            const display = document.getElementById('namesDisplay');
+            const names = Array.from(display.querySelectorAll('.team-name'))
+                .map(el => el.textContent)
+                .join('\n');
+
+            navigator.clipboard.writeText(names).then(() => {
+                showCopyFeedback('Copied all generated team names');
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', loadDataset);
+    </script>
+</body>
+</html>
